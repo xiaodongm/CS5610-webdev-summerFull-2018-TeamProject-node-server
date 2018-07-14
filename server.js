@@ -15,13 +15,7 @@ var host = process.env.HOST || '0.0.0.0';
 var port = process.env.PORT || 8080;
 
 var cors_proxy = require('cors-anywhere');
-cors_proxy.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", '*');
-    res.header("Access-Control-Allow-Credentials", true);
-    res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-    res.header("Access-Control-Allow-Headers", 'Origin,X-Requested-With,Content-Type,Accept,content-type,application/json');
-    next();
-});
+
 cors_proxy.createServer({
     originWhitelist: [], // Allow all origins
     requireHeader: ['origin', 'x-requested-with'],
