@@ -5,7 +5,7 @@ module.exports = function (app) {
     app.get('/api/profile', profile);
     app.post('/api/logout', logout);
     app.post('/api/login', login);
-    app.get('/api/user/username/:username', findUserByUsername);
+    // app.get('/api/user/username/:username', findUserByUsername);
     app.put('/api/profile', updateUser);
     app.delete('/api/profile', deleteUser);
 
@@ -51,10 +51,17 @@ module.exports = function (app) {
 
     function createUser(req, res) {
         var user = req.body;
-        userModel.createUser(user)
-            .then(function (user) {
-                req.session['currentUser'] = user;
-                res.send(user);
+        userModel.findUserByUsername(user.username)
+            .then(response => {
+                if(response) {
+                    res.json({err: 'Username already exist!'})
+                } else {
+                    userModel.createUser(user)
+                        .then(response => {
+                            req.session['currentUser'] = response;
+                            res.json(response);
+                        });
+                }
             })
     }
 
@@ -65,15 +72,15 @@ module.exports = function (app) {
             })
     }
 
-    function findUserByUsername(req, res) {
-        var username = req.params['username'];
-        //console.log(username);
-        userModel.findUserByUsername({username: username})
-            .then(function (user) {
-                res.json(user);
-            })
-        // res.send('hello');
-    }
+    // function findUserByUsername(req, res) {
+    //     var username = req.params['username'];
+    //     //console.log(username);
+    //     userModel.findUserByUsername({username: username})
+    //         .then(function (user) {
+    //             res.json(user);
+    //         })
+    //     // res.send('hello');
+    // }
 
     function updateUser(req, res) {
         var newUser = req.body;
