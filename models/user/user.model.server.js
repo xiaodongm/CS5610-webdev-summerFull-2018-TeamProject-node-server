@@ -19,8 +19,12 @@ function createUser(user) {
 function findAllUsers() {
     return userModel.find();
 }
-function findUserByUsername(user) {
-    return userModel.findOne(user);
+// function findUserByUsername(user) {
+//     return userModel.findOne(user);
+// }
+
+function findUserByUsername(username) {
+    return userModel.findOne({username: username});
 }
 
 function updateUser(user) {
