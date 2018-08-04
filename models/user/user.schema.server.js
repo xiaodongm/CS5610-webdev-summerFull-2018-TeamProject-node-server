@@ -9,6 +9,9 @@ var userSchema = mongoose.Schema({
     email: String,
     phoneNumber: String,
     address: String,
+    location: String,
+    lat: String,
+    lng: String,
     profilePhoto: String,
     role:String,
 }, {collection: 'user'});
