@@ -51,6 +51,9 @@ function getSession(req, res) {
 var userService = require('./services/user.service.server');
 userService(app);
 
+const providerService = require('./services/provider.service.server');
+providerService(app);
+
 
 app.listen(process.env.PORT || 3000);
 
