@@ -10,12 +10,14 @@ module.exports = function (app) {
     app.delete('/api/profile', deleteUser);
 
     var userModel = require('../models/user/user.model.server');
+    var eventModel = require('../models/event/event.model.server');
+    var enrollmentModel = require('../models/enrollment/enrollment.module.server');
 
     function login(req, res) {
         var credentials = req.body;
         userModel
             .findUserByCredentials(credentials)
-            .then(function(user) {
+            .then(function (user) {
                 //console.log(user);
                 if (user === null) {
                     res.json({error: 'can not find'})
@@ -53,7 +55,7 @@ module.exports = function (app) {
         var user = req.body;
         userModel.findUserByUsername(user.username)
             .then(response => {
-                if(response) {
+                if (response) {
                     res.json({err: 'Username already exist!'})
                 } else {
                     userModel.createUser(user)
@@ -99,6 +101,17 @@ module.exports = function (app) {
         if (!currentUser) {
             res.json({error: 'Please log in'});
         } else {
+            let events = [];
+            let enrollments = [];
+            eventModel.findEventsForUser(currentUser._id)
+                .then(response => events = response)
+                .then(() => enrollmentModel.findEnrollmentsForAttendee(currentUser._id))
+                .then(response => enrollments = response)
+                .then(() => userModel.deleteUser(currentUser))
+                .then(() => {
+                    events.forEach(event => eventModel.deleteEvent(event._id).then());
+                    enrollments.forEach(enrollment => enrollmentModel.unenrollAttendeeInEvent(enrollment).then())
+                })
             // let enrolledSections = [];
             // enrollmentModel.findSectionsForStudent(currentUser._id)
             //     .then(sections => enrolledSections = sections)
