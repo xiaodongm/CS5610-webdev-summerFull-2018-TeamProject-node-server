@@ -60,6 +60,9 @@ eventService(app);
 const enrollmentService = require('./services/enrollment.service.server');
 enrollmentService(app);
 
+const discussionService = require('./services/discussion.service.server');
+discussionService(app);
+
 
 app.listen(process.env.PORT || 3000);
 

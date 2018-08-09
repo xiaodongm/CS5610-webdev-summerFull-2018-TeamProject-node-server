@@ -15,7 +15,7 @@ function createEvent(event) {
 }
 
 function findEventsForUser(userId) {
-    return eventModel.find({organizer: userId});
+    return eventModel.find({organizer: userId}).populate('attendee').exec();
 }
 
 function deleteEvent(eventId) {
