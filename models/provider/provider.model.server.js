@@ -35,6 +35,10 @@ function deleteProvider(provider) {
     return providerModel.remove(provider)
 }
 
+function deleteProviderById(providerId) {
+    return providerModel.remove({_id: providerId});
+}
+
 var api = {
     createProvider: createProvider,
     findAllProviders: findAllProviders,
@@ -42,7 +46,8 @@ var api = {
     findProviderByCredentials: findProviderByCredentials,
     findProviderByUsername: findProviderByUsername,
     updateProvider: updateProvider,
-    deleteProvider: deleteProvider
+    deleteProvider: deleteProvider,
+    deleteProviderById: deleteProviderById
 };
 
 module.exports = api;
