@@ -49,7 +49,7 @@ module.exports = function (app) {
     function profile(req, res) {
         var user = req.session['currentUser']
         if (user) {
-            res.send(req.session['currentUser']);
+            res.json(req.session['currentUser']);
         } else {
             res.json({error: 'Please log in'})
         }
