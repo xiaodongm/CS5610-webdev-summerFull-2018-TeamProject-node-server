@@ -2,9 +2,11 @@ var mongoose = require('mongoose');
 var eventSchema = mongoose.Schema({
     title: String,
     startTime: Date,
-    endTiME: Date,
+    endTime: Date,
     location: String,
     tags: [String],
+    photos: [String],
+    video: String,
     lat: String,
     lng: String,
     organizer: {

@@ -5,6 +5,7 @@ module.exports = function (app) {
     app.get('/api/discussions', findAllDiscussions);
     app.get('/api/discussion/:discussionId', findDiscussionById);
     app.get('/api/discussion/user/:userId', findDiscussionsForUser);
+    app.get('/api/discussion/event/:eventId', findDiscussionsForEvent);
 
     var discussionModule = require ('../models/discussion/discussion.model.server');
     
@@ -60,6 +61,13 @@ module.exports = function (app) {
         const userId = req.params['userId'];
         discussionModule
             .findDiscussionsForUser(userId)
+            .then(response => res.json(response));
+    }
+
+    function findDiscussionsForEvent(req, res) {
+        const eventId = req.params['eventId'];
+        discussionModule
+            .findDiscussionsForEvent(eventId)
             .then(response => res.json(response));
     }
 }
