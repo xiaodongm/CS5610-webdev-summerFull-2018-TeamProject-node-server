@@ -54,6 +54,12 @@ userService(app);
 const providerService = require('./services/provider.service.server');
 providerService(app);
 
+const eventService = require('./services/event.service.server');
+eventService(app);
+
+const enrollmentService = require('./services/enrollment.service.server');
+enrollmentService(app);
+
 
 app.listen(process.env.PORT || 3000);
 
