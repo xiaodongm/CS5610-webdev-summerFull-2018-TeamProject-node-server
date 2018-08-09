@@ -35,6 +35,14 @@ function findDiscussionsForUser(userId) {
         .exec();
 }
 
+function findDiscussionsForEvent(eventId) {
+    return discussionModel
+        .find({event: eventId})
+        .populate('preDiscussion')
+        .populate('postPeople')
+        .exec();
+}
+
 var api = {
     createDiscussion: createDiscussion,
     deleteDiscussion: deleteDiscussion,
@@ -42,6 +50,7 @@ var api = {
     findAllDiscussions: findAllDiscussions,
     findDiscussionById: findDiscussionById,
     findDiscussionsForUser: findDiscussionsForUser,
+    findDiscussionsForEvent: findDiscussionsForEvent,
 }
 
 module.exports = api;
