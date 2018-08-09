@@ -10,6 +10,9 @@ module.exports = function (app) {
     app.delete('/api/profile', deleteUser);
     app.delete('/api/user/userId/:userId', deleteUserById);
     app.put('/api/admin/updateUser', adminUpdateUser);
+    app.put('/api/user/follow/:userId', followUser);
+    app.put('/api/user/un_follow/:userId', unfollowUser);
+    app.get('/api/user/allFollows/:userId', findFollowingUsersForUser)
 
     var userModel = require('../models/user/user.model.server');
     var eventModel = require('../models/event/event.model.server');
@@ -74,6 +77,38 @@ module.exports = function (app) {
             .then(function (users) {
                 res.send(users);
             })
+    }
+
+    function followUser(req, res) {
+        var curUser = req.session['currentUser'];
+        if (curUser) {
+            const userId = req.params['userId'];
+            userModel.followUser(curUser._id, userId)
+                .then(response => res.json(response));
+        } else {
+            res.json({error: 'Please log in'})
+        }
+
+    }
+
+    function unfollowUser(req, res) {
+        var curUser = req.session['currentUser'];
+        if (curUser) {
+            const userId = req.params['userId'];
+            userModel.unfollowUser(curUser._id, userId)
+                .then(response => res.json(response));
+        } else {
+            res.json({error: 'Please log in'})
+        }
+    }
+
+    function findFollowingUsersForUser (req, res) {
+        const userId = req.params['userId'];
+        userModel.findUserById(userId)
+            .then(response => {
+                const followingFriends = response.following;
+                res.json(followingFriends);
+            });
     }
 
     // function findUserByUsername(req, res) {

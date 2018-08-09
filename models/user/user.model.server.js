@@ -43,6 +43,21 @@ function deleteUserById(userId) {
     return userModel.remove({_id: userId})
 }
 
+function followUser(curUserId, userId) {
+    return userModel.update(
+        {_id: curUserId},
+        {$push: {following: userId}},
+    )
+}
+
+function unfollowUser(curUserId, userId) {
+    return userModel.update(
+        {_id: curUserId},
+        {$pull: {following: userId}}
+    )
+}
+
+
 var api = {
     createUser: createUser,
     findAllUsers: findAllUsers,
@@ -51,7 +66,10 @@ var api = {
     findUserByUsername: findUserByUsername,
     updateUser: updateUser,
     deleteUser: deleteUser,
-    deleteUserById: deleteUserById
+    deleteUserById: deleteUserById,
+    followUser: followUser,
+    unfollowUser: unfollowUser,
+
 };
 
 module.exports = api;
