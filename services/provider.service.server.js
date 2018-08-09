@@ -7,6 +7,8 @@ module.exports = function (app) {
     app.post('/api/provider/login', login);
     app.put('/api/provider/profile', updateProvider);
     app.delete('/api/provider/profile', deleteProvider);
+    app.delete('/api/provider/providerId/:providerId', deleteProviderById);
+    app.put('/api/admin/updateProvider', adminUpdateProvider);
 
     const providerModel = require('../models/provider/provider.model.server');
 
@@ -92,6 +94,14 @@ module.exports = function (app) {
         // res.json(newUser);
     }
 
+    function adminUpdateProvider(req, res) {
+        var newUser = req.body;
+        providerModel.updateProvider(newUser)
+            .then(function (user) {
+                res.json(user);
+            })
+    }
+
     function deleteProvider(req, res) {
         var currentUser = req.session['currentUser'];
         if (!currentUser) {
@@ -115,5 +125,11 @@ module.exports = function (app) {
                 .then(() => res.send('200'));
         }
 
+    }
+
+    function deleteProviderById(req, res) {
+        const id = req.params['providerId'];
+        providerModel.deleteProviderById(id)
+            .then(() => res.send('200'));
     }
 };

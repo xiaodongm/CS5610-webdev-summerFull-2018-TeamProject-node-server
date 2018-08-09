@@ -8,6 +8,8 @@ module.exports = function (app) {
     // app.get('/api/user/username/:username', findUserByUsername);
     app.put('/api/profile', updateUser);
     app.delete('/api/profile', deleteUser);
+    app.delete('/api/user/userId/:userId', deleteUserById);
+    app.put('/api/admin/updateUser', adminUpdateUser);
 
     var userModel = require('../models/user/user.model.server');
 
@@ -94,6 +96,14 @@ module.exports = function (app) {
         // res.json(newUser);
     }
 
+    function adminUpdateUser(req, res) {
+        const newUser = req.body;
+        userModel.updateUser(newUser)
+            .then(function (user) {
+                res.json(user);
+            })
+    }
+
     function deleteUser(req, res) {
         var currentUser = req.session['currentUser'];
         if (!currentUser) {
@@ -118,4 +128,10 @@ module.exports = function (app) {
         }
 
     }
-}
+
+    function deleteUserById(req, res) {
+        const id = req.params['userId'];
+        userModel.deleteUserById(id)
+            .then(() => res.send('200'));
+    }
+};
