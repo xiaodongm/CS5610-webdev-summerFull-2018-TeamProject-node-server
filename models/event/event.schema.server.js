@@ -15,7 +15,8 @@ var eventSchema = mongoose.Schema({
     },
     attendee: [{ type: mongoose.Schema.Types.ObjectId,
                  ref: 'UserModel',}],
-    description: ['WidgetModel']
+    description: ['WidgetModel'],
+    level: String
 }, {collection: 'event'});
 
 module.exports = eventSchema;
