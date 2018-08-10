@@ -27,14 +27,14 @@ module.exports = function (app) {
             )
             .then(response => {
                 console.log(response);
-            if (response.length !== 0) {
-                res.json({error: 'has enrolled'});
-            } else {
-                reservationModel.reserveSiteForEvent({event: eventId, site: siteId})
-                    .then(reserve => res.send(reserve));
-            })
-            }
-        })
+                if (response.length !== 0) {
+                    res.json({error: 'has enrolled'});
+                } else {
+                    reservationModel.reserveSiteForEvent({event: eventId, site: siteId})
+                        .then(reserve => res.send(reserve));
+                }}
+            );
+
         } else {
             res.json({error: 'Please log in'});
         }
