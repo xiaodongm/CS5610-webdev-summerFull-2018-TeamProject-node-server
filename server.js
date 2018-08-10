@@ -64,5 +64,9 @@ const discussionService = require('./services/discussion.service.server');
 discussionService(app);
 
 
+const equipmentService = require('./services/equipment.service.server');
+equipmentService(app);
+
+
 app.listen(process.env.PORT || 3000);
 
