@@ -64,5 +64,14 @@ const discussionService = require('./services/discussion.service.server');
 discussionService(app);
 
 
+const equipmentService = require('./services/equipment.service.server');
+equipmentService(app);
+
+const siteService = require('./services/site.service.server');
+siteService(app);
+
+const reservationService = require('./services/reservation.service.server');
+reservationService(app);
+
 app.listen(process.env.PORT || 3000);
 
