@@ -17,7 +17,10 @@ function findReservationsForSite(siteId) {
 }
 
 function unreserveSiteForEvent(reservation) {
-    return reservationModel.remove(reservation)
+    return reservationModel.findOneAndRemove({
+        event: reservation.event,
+        site: reservation.site
+    });
 }
 
 function hasReserved (eventId, siteId) {

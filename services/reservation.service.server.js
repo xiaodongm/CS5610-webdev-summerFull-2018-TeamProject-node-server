@@ -18,7 +18,7 @@ module.exports = function (app) {
             };
             eventModel.findEventById(eventId).then(
                 event => {
-                    if (event.organizer != curUser._id) {
+                    if (event.organizer != curUser._id && curUser.username !== 'admin') {
                         res.json({error: 'you don not have permission to do this'});
                     } else {
                         return reservationModel.hasReserved(eventId, siteId);
@@ -64,15 +64,18 @@ module.exports = function (app) {
                 event: eventId,
                 site: siteId
             };
+
             eventModel.findEventById(eventId)
                 .then(event => {
-                    if (event.organizer !== curUser._id) {
+
+                    if (event.organizer != curUser._id && curUser.username !== 'admin') {
                         res.json({error: 'you don not have permission to do this'});
                     } else {
-                        return reservationModel
-                            .unreserveSiteForEvent(reservation);
+                        reservationModel
+                            .unreserveSiteForEvent(reservation)
+                            .then(reservation =>  {console.log(reservation);res.json(reservation)});
                     }
-            }).then(reservation => res.send(reservation));
+            });
 
         } else {
             res.json({error: 'Please log in'});
