@@ -90,8 +90,9 @@ module.exports = function (app) {
     }
 
     function findAllReservations(req, res) {
+        console.log('1232');
         reservationModel
-            .findAllReservations
+            .findAllReservations()
             .then(reservation =>  res.json(reservation));
     }
 
@@ -101,4 +102,4 @@ module.exports = function (app) {
             .findReservationsForProvider(providerId)
             .then(reservation =>  res.json(reservation));
     }
-}
+};

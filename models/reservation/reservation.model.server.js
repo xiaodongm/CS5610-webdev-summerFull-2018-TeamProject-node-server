@@ -44,8 +44,7 @@ function findAllReservations() {
         .find()
         .populate('event')
         .populate('site')
-        .populate('provider')
-        .exec;
+        .populate('provider');
 }
 
 function findReservationsForProvider(providerId) {
