@@ -8,6 +8,10 @@ var equipmentRentingSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'EquipmentModel'
     },
+    provider: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'EquipmentModel',
+    },
     quantity: Number
 }, {collection: 'equipmentRenting'});
 module.exports = equipmentRentingSchema;

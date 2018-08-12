@@ -2,6 +2,7 @@ module.exports = function (app) {
     app.post('/api/attendee/:aid/event/:eid', enrollAttendeeInEvent);
     app.get('/api/attendee/:aid/event', findEnrollmentsForAttendee);
     app.delete('/api/attendee/:aid/event/:eid', unenrollAttendeeInEvent);
+    app.get('/api/enrollments', findAllEnrollments)
 
     var eventModel = require('../models/event/event.model.server');
     var enrollmentModel = require('../models/enrollment/enrollment.module.server');
@@ -60,6 +61,12 @@ module.exports = function (app) {
         } else {
             res.json({error: 'Please log in'});
         }
+    }
+
+    function findAllEnrollments(req, res) {
+        enrollmentModel
+            .findAllEnrollments()
+            .then(enrollment => res.send(enrollment));
     }
 
 }

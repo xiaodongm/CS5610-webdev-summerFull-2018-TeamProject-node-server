@@ -3,6 +3,8 @@ module.exports = function (app) {
     app.get('/api/event/:eventId/equip', findRentingsForEvent);
     app.get('/api/equip/:equipId/event', findRentingsForEquipment);
     app.delete('/api/event/:eventId/equip/:equipId', returnEquipForEvent);
+    app.get('/api/provider/:providerId/renting', findRentingsForProvider);
+    app.get('/api/rentings', findAllRentings);
 
     var eventModel = require('../models/event/event.model.server');
     var equipmentModel = require('../models/equipment/equipment.model.server');
@@ -75,5 +77,20 @@ module.exports = function (app) {
         } else {
             res.json({error: 'Please log in'});
         }
+    }
+
+    function findRentingsForProvider(req, res) {
+        const providerId = req.params['providerId'];
+        equipmentRentingModel
+            .findRentingsForProvider(providerId)
+            .then(rentings => res.json(rentings));
+
+    }
+
+    function findAllRentings() {
+        equipmentRentingModel
+            .findRentingsForProvider(providerId)
+            .then(rentings => res.json(rentings));
+
     }
 }

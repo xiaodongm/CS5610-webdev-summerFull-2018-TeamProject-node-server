@@ -34,6 +34,21 @@ function findRentingsForEvent (eventId) {
 
 }
 
+function findRentingsForProvider(providerId) {
+    return equipmentRentingModel.find({
+        provider: providerId
+    }).populate('equipment').populate('event')
+        .exec();
+}
+
+function findAllRentings() {
+    return equipmentRentingModel.find()
+        .populate('equipment')
+        .populate('event')
+        .populate('provider')
+        .exec();
+}
+
 
 
 module.exports = {
@@ -41,5 +56,7 @@ module.exports = {
     findRentingsForEquipment: findRentingsForEquipment,
     returnEquipForEvent: returnEquipForEvent,
     hasRent: hasRent,
-    findRentingsForEvent: findRentingsForEvent
+    findRentingsForEvent: findRentingsForEvent,
+    findRentingsForProvider: findRentingsForProvider,
+    findAllRentings: findAllRentings
 };
