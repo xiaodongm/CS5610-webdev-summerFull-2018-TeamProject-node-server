@@ -17,9 +17,8 @@ function findRentingsForEquipment(equipId) {
 }
 
 function returnEquipForEvent(renting) {
-    return equipmentRentingModel.findOneAndRemove({
-        event: renting.event,
-        equipment: renting.equipment
+    return equipmentRentingModel.remove({
+        _id: renting._id
     });
 }
 

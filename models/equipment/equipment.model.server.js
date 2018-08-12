@@ -30,13 +30,13 @@ function updateEquipment(equipment) {
 }
 
 function returnbackEquipments(equipmentId, quantity) {
-    return equipmentModel.update({_id: equipment._id}, {
+    return equipmentModel.update({_id: equipmentId}, {
         $inc: {available: +quantity}
     })
 }
 
 function takeawayEquipments(equipmentId, quantity) {
-    return equipmentModel.update({_id: equipment._id}, {
+    return equipmentModel.update({_id: equipmentId}, {
         $inc: {available: -quantity}
     })
 }
