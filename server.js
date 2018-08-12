@@ -73,7 +73,7 @@ siteService(app);
 const reservationService = require('./services/reservation.service.server');
 reservationService(app);
 
-const equipmentRentingService = require('./services/reservation.service.server');
+const equipmentRentingService = require('./services/equipmentRenting.service.server');
 equipmentRentingService(app);
 
 app.listen(process.env.PORT || 3000);
