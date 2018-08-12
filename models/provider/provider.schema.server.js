@@ -4,7 +4,9 @@ const userSchema = require('../user/user.schema.server')
 
 const providerSchema = extendSchema(userSchema, {
     organizationName: String,
-    organizationAddress: String
+    organizationAddress: String,
+    sites: [],
+    equipments: [],
 },{collection: 'provider'});
 
 module.exports = providerSchema;

@@ -14,6 +14,10 @@ var userSchema = mongoose.Schema({
     lng: String,
     profilePhoto: String,
     role:String,
+    following: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'UserModel',
+    }],
 }, {collection: 'user'});
 
 module.exports = userSchema;

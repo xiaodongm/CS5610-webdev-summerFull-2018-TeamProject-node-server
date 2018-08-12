@@ -8,6 +8,7 @@ module.exports = function (app) {
 
     var eventModel = require('../models/event/event.model.server');
     var enrollmentModel = require('../models/enrollment/enrollment.module.server');
+    var equipmentRentingModel = require('../models/equipmentRenting/equipmentRenting.model.server');
     
     function findAllEvents(req, res) {
         eventModel.findAllEvents()
@@ -25,15 +26,24 @@ module.exports = function (app) {
         const eventId = req.params['eventId'];
         let enrollments = [];
         if(curUser) {
-            enrollmentModel.findEnrollmentsForEvent(eventId)
-                .then(response => enrollments = response)
-                .then(() => eventModel.deleteEvent(eventId))
-                .then(() => {
-                    for(let i = 0; i < enrollments.length; i++) {
-                        enrollmentModel.unenrollAttendeeInEvent(enrollments[i]).then();
+            equipmentRentingModel.findRentingsForEvent(eventId)
+                .then(response => {
+                    if(response.length > 0) {
+                        es.json({error: 'Sorry, You can not delete the event before you returned all equipment'});
+                    } else {
+                        enrollmentModel.findEnrollmentsForEvent(eventId)
+                            .then(response => enrollments = response)
+                            .then(() => eventModel.deleteEvent(eventId))
+                            .then(() => {
+                                for(let i = 0; i < enrollments.length; i++) {
+                                    enrollmentModel.unenrollAttendeeInEvent(enrollments[i]).then();
+                                }
+                            })
+                            .then(() => res.send('200'));
                     }
                 })
-                .then(() => res.send('200'));
+
+
         } else {
             res.json({error: 'Please log in'});
         }
@@ -67,7 +77,6 @@ module.exports = function (app) {
         } else {
             res.json({error: 'Please log in'});
         }
-
     }
 
 

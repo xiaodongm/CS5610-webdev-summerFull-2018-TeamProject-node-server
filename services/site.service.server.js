@@ -4,6 +4,7 @@ module.exports = function (app) {
     app.get('/api/site/:siteId', findSiteById);
     app.delete('/api/site/:siteId', deleteSite);
     app.get('/api/provider/:providerId/site', findSitesForProvider);
+    app.get('/api/providerInfo/:providerId/site', findSitesForProviderWithProviderInfo);
     app.put('/api/site/:siteId', updateSite);
 
     var siteModel = require('../models/site/site.model.server');
@@ -58,6 +59,13 @@ module.exports = function (app) {
     function findSitesForProvider(req, res) {
         const providerId = req.params['providerId'];
         siteModel.findSitesForProvider(providerId)
+            .then(sites => res.send(sites));
+
+    }
+
+    function findSitesForProviderWithProviderInfo(req, res) {
+        const providerId = req.params['providerId'];
+        siteModel.findSitesForProviderWithProviderInfo(providerId)
             .then(sites => res.send(sites));
 
     }
