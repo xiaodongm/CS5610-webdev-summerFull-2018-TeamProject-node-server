@@ -29,6 +29,10 @@ function updateSite(site) {
     })
 }
 
+function findSitesForProviderWithProviderInfo(userId) {
+    return siteModel.find({provider: userId}).populate('provider').exec();
+}
+
 
 var api = {
     findAllSites: findAllSites,
@@ -37,6 +41,7 @@ var api = {
     findSitesForProvider: findSitesForProvider,
     deleteSite: deleteSite,
     updateSite: updateSite,
+    findSitesForProviderWithProviderInfo: findSitesForProviderWithProviderInfo
 }
 
 module.exports = api;
