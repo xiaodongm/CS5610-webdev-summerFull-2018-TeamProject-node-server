@@ -39,11 +39,29 @@ function findReservationsForEvent (eventId) {
 //     return enrollmentModel.remove({attendee: userId});
 // }
 
+function findAllReservations() {
+    return reservationModel
+        .find()
+        .populate('event')
+        .populate('site')
+        .populate('provider')
+        .exec;
+}
+
+function findReservationsForProvider(providerId) {
+    return reservationModel.find({provider: providerId})
+        .populate('event')
+        .populate('site')
+        .exec();
+}
+
 module.exports = {
     reserveSiteForEvent: reserveSiteForEvent,
     findReservationsForSite: findReservationsForSite,
     unreserveSiteForEvent: unreserveSiteForEvent,
     hasReserved: hasReserved,
     findReservationsForEvent: findReservationsForEvent,
+    findAllReservations: findAllReservations,
+    findReservationsForProvider: findReservationsForProvider,
     // deleteEnrollmnetForUser: deleteEnrollmnetForUser
 };

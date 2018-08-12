@@ -32,6 +32,14 @@ function findEnrollmentsForEvent (eventId) {
 
 }
 
+function findAllEnrollments () {
+    return enrollmentModel
+        .find()
+        .populate('attendee')
+        .populate('event')
+        .exec();
+}
+
 // function deleteEnrollmnetForUser (userId) {
 //     return enrollmentModel.remove({attendee: userId});
 // }
@@ -42,5 +50,6 @@ module.exports = {
     unenrollAttendeeInEvent: unenrollAttendeeInEvent,
     hasEnrollmented: hasEnrollmented,
     findEnrollmentsForEvent: findEnrollmentsForEvent,
+    findAllEnrollments: findAllEnrollments
    // deleteEnrollmnetForUser: deleteEnrollmnetForUser
 };

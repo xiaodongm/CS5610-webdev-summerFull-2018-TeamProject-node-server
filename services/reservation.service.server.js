@@ -3,37 +3,44 @@ module.exports = function (app) {
     app.get('/api/event/:eventId/site', findReservationsForEvent);
     app.get('/api/site/:siteId/event', findReservationsForSite);
     app.delete('/api/event/:eventId/site/:siteId', unreserveSiteForEvent);
+    app.get('/api/reservations', findAllReservations);
+    app.get('/api/provider/:providerId', findReservationsForProvider);
 
     var eventModel = require('../models/event/event.model.server');
     var reservationModel = require('../models/reservation/reservation.model.server');
+    var siteModel = require('../models/site/site.model.server');
 
     function reserveSiteForEvent(req, res) {
         const curUser = req.session.currentUser;
         if (curUser) {
             const eventId = req.params['eventId'];
             const siteId = req.params['siteId'];
-            const reservation = {
-                event: eventId,
-                site: siteId
-            };
-            eventModel.findEventById(eventId).then(
-                event => {
-                    if (event.organizer != curUser._id && curUser.username !== 'admin') {
-                        res.json({error: 'you don not have permission to do this'});
-                    } else {
-                        return reservationModel.hasReserved(eventId, siteId);
-                    }
-                }
-            )
-            .then(response => {
-                console.log(response);
-                if (response.length !== 0) {
-                    res.json({error: 'has enrolled'});
-                } else {
-                    reservationModel.reserveSiteForEvent({event: eventId, site: siteId})
-                        .then(reserve => res.send(reserve));
-                }}
-            );
+            siteModel.findSiteById(siteId)
+                .then(site => {
+                    const reservation = {
+                        provider: site.provider,
+                        event: eventId,
+                        site: siteId
+                    };
+                    eventModel.findEventById(eventId).then(
+                        event => {
+                            if (event.organizer != curUser._id && curUser.username !== 'admin') {
+                                res.json({error: 'you don not have permission to do this'});
+                            } else {
+                                return reservationModel.hasReserved(eventId, siteId);
+                            }
+                        }
+                    )
+                        .then(response => {
+                            console.log(response);
+                            if (response.length !== 0) {
+                                res.json({error: 'has enrolled'});
+                            } else {
+                                reservationModel.reserveSiteForEvent(reservation)
+                                    .then(reserve => res.send(reserve));
+                            }}
+                        );
+                })
 
         } else {
             res.json({error: 'Please log in'});
@@ -82,4 +89,16 @@ module.exports = function (app) {
         }
     }
 
+    function findAllReservations(req, res) {
+        reservationModel
+            .findAllReservations
+            .then(reservation =>  res.json(reservation));
+    }
+
+    function findReservationsForProvider(req, res){
+        const providerId = req.params['providerId'];
+        reservationModel
+            .findReservationsForProvider(providerId)
+            .then(reservation =>  res.json(reservation));
+    }
 }
