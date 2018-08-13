@@ -122,6 +122,7 @@ module.exports = function (app) {
     // }
 
     function updateUser(req, res) {
+        console.log('1');
         var newUser = req.body;
         // console.log(newUser);
         userModel.updateUser(newUser)
@@ -134,6 +135,7 @@ module.exports = function (app) {
     }
 
     function adminUpdateUser(req, res) {
+        console.log('2');
         const newUser = req.body;
         userModel.updateUser(newUser)
             .then(function (user) {
