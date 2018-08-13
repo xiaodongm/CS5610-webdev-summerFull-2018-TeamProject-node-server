@@ -58,19 +58,22 @@ module.exports = function (app) {
 
     function returnEquipForEvent(req, res) {
         const curUser = req.session.currentUser;
-        if (!curUser) {
+        if (curUser) {
             const eventId = req.params['eventId'];
             const equipId = req.params['equipId'];
             const rent = req.body;
             equipmentModel.findEquipmentById(equipId)
                 .then(equip => {
+                    console.log(rent);
+                    console.log(equip);
+                    console.log(rent.quantity);
                     if (equip.provider != curUser._id && curUser.username !== 'admin') {
                         res.json({error: 'you don not have permission to do this'});
                     } else {
                         equipmentModel.returnbackEquipments(equipId, rent.quantity)
                             .then(() => equipmentRentingModel
                                 .returnEquipForEvent(rent)
-                                .then(() => res.json('200')));
+                                .then(() => res.send('200')));
                     }
                 });
 
@@ -87,10 +90,10 @@ module.exports = function (app) {
 
     }
 
-    function findAllRentings() {
+    function findAllRentings(req, res) {
         equipmentRentingModel
-            .findRentingsForProvider(providerId)
+            .findAllRentings()
             .then(rentings => res.json(rentings));
 
     }
-}
+};

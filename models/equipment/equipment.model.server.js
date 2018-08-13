@@ -50,6 +50,6 @@ var api = {
     updateEquipment: updateEquipment,
     returnbackEquipments: returnbackEquipments,
     takeawayEquipments: takeawayEquipments,
-}
+};
 
 module.exports = api;
