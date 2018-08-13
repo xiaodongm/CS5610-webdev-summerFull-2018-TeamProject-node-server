@@ -6,11 +6,15 @@ module.exports = function (app) {
     app.post('/api/provider/logout', logout);
     app.post('/api/provider/login', login);
     app.put('/api/provider/profile', updateProvider);
-    app.delete('/api/provider/profile', deleteProvider);
-    app.delete('/api/provider/providerId/:providerId', deleteProviderById);
+    // app.delete('/api/provider/profile', deleteProvider);
+    app.delete('/api/provider/providerId/:providerId', deleteProvider);
     app.put('/api/admin/updateProvider', adminUpdateProvider);
 
     const providerModel = require('../models/provider/provider.model.server');
+    const reservationModel = require('../models/reservation/reservation.model.server');
+    const equipmentRentingModel = require('../models/equipmentRenting/equipmentRenting.model.server');
+    const siteModel = require('../models/site/site.model.server');
+    const equipmentModel = require('../models/equipment/equipment.model.server');
 
     function login(req, res) {
         var credentials = req.body;
@@ -98,31 +102,76 @@ module.exports = function (app) {
         var newUser = req.body;
         providerModel.updateProvider(newUser)
             .then(function (user) {
+                req.session['currentUser'] = newUser;
                 res.json(user);
             })
     }
 
     function deleteProvider(req, res) {
         var currentUser = req.session['currentUser'];
+        console.log(currentUser);
+        console.log(!currentUser);
         if (!currentUser) {
             res.json({error: 'Please log in'});
         } else {
-            // let enrolledSections = [];
-            // enrollmentModel.findSectionsForStudent(currentUser._id)
-            //     .then(sections => enrolledSections = sections)
-            //     .then(() => {
-            //         enrollmentModel.deleteEnrollmnetForUser(currentUser._id)
-            //             .then(() => userModel.deleteUser(currentUser))
-            //     })
-            //     .then(() => {
-            //         // console.log(enrolledSections);
-            //         enrolledSections.forEach(enrollment => {
-            //             sectionModel.incrementSectionSeats(enrollment.section._id)
-            //                 .then(response => console.log(response));
-            //         })
-            //     }).then(() => res.send('200'));
-            providerModel.deleteProvider(currentUser)
-                .then(() => res.send('200'));
+            const id = req.params['providerId'];
+            providerModel.findProviderById(id)
+                .then(user => {
+                    if(user){
+                        if (user.role === 'SiteManager') {
+                            let s;
+                            siteModel.findSitesForProvider(user._id)
+                                .then(sites => {
+                                    s = sites;
+                                    var sitesPromiseArray = [];
+                                    for (const site of sites) {
+                                        sitesPromiseArray.push(reservationModel.findReservationsForSite(site._id));
+                                    }
+                                    Promise.all(sitesPromiseArray)
+                                        .then(reservations => {
+                                            var reservationPromiseArray = [];
+                                            for (const reservation of reservations) {
+                                                reservationPromiseArray.push(reservationModel.unreserveSiteForEvent(reservation));
+                                            }
+                                            return Promise.all(reservationPromiseArray);
+                                        }). then(() => {
+                                            var sPromiseArray = [];
+                                            for (const si of s) {
+                                                sPromiseArray.push(siteModel.deleteSite(si._id));
+                                            }
+                                            return Promise.all(sPromiseArray);
+                                    }).then(() => providerModel.deleteProviderById(id).then((response) => res.json(response)));
+                                })
+                        } else {
+                            let e;
+                            equipmentModel.findEquipmentsForProvider(user._id)
+                                .then(equipments => {
+                                    e = equipments;
+                                    var equipmentsPromiseArray = [];
+                                    for (const equipment of equipments) {
+                                        equipmentsPromiseArray.push(equipmentRentingModel.findRentingsForEquipment(equipment._id));
+                                    }
+                                    Promise.all(equipmentsPromiseArray)
+                                        .then(rentings => {
+                                            var rentingPromiseArray = [];
+                                            for (const renting of rentings) {
+                                                console.log(rentings);
+                                                rentingPromiseArray.push(equipmentRentingModel.returnEquipForEvent(renting));
+                                            }
+                                            return Promise.all(rentingPromiseArray);
+                                        }). then(() => {
+                                        var ePromiseArray = [];
+                                        for (const eq of e) {
+                                            ePromiseArray.push(equipmentModel.deleteEquipment(eq._id));
+                                        }
+                                        return Promise.all(ePromiseArray);
+                                    }).then(() => providerModel.deleteProviderById(id).then((response) => res.json(response)));
+                                })
+                        }
+                    } else {
+                        res.json({error: 'There is no such user'});
+                    }
+                })
         }
 
     }

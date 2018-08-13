@@ -8,5 +8,9 @@ var reservationSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'SiteModel'
     },
+    provider: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'SiteModel'
+    }
 }, {collection: 'reservation'});
 module.exports = reservationSchema;

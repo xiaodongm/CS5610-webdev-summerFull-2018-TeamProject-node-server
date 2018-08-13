@@ -9,6 +9,7 @@ module.exports = function (app) {
 
     var siteModel = require('../models/site/site.model.server');
     // var enrollmentModel = require('../models/enrollment/enrollment.module.server');
+    var reservationModel = require('../models/reservation/reservation.model.server')
 
     function findAllSites(req, res) {
         siteModel.findAllSites()
@@ -22,25 +23,18 @@ module.exports = function (app) {
     }
 
     function deleteSite(req, res) {
-        // const curUser = req.session.currentUser;
-        // const eventId = req.params['eventId'];
-        // let enrollments = [];
-        // if(curUser) {
-        //     enrollmentModel.findEnrollmentsForEvent(eventId)
-        //         .then(response => enrollments = response)
-        // .then(() => eventModel.deleteEvent(eventId))
-        // .then(() => {
-        //         for(let i = 0; i < enrollments.length; i++) {
-        //         enrollmentModel.unenrollAttendeeInEvent(enrollments[i]).then();
-        //     }
-        // })
-        // .then(() => res.send('200'));
-        // } else {
-        //     res.json({error: 'Please log in'});
-        // }
         const siteId = req.params['siteId'];
-        // console.log(equipmentId);
-        siteModel.deleteSite(siteId).then(() => res.send('200'));
+        let reservations = [];
+        reservationModel.findReservationsForSite(siteId)
+            .then(reservation => reservations = reservation).then(() => {
+            siteModel.deleteSite(siteId)
+                .then(() => {
+                    reservations.forEach(r =>
+                        reservationModel.unreserveSiteForEvent(r)
+                            .then());
+            }).then(() =>res.send('200'));
+        })
+
     }
 
     function createSite(req, res) {
