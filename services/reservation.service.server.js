@@ -92,4 +92,4 @@ module.exports = function (app) {
             .findReservationsForProvider(providerId)
             .then(reservation =>  res.json(reservation));
     }
-}
+};

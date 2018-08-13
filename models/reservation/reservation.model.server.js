@@ -45,8 +45,8 @@ function findAllReservations() {
         .populate('event')
         .populate('site')
         .populate('provider')
-
 }
+
 
 function findReservationsForProvider(providerId) {
     return reservationModel.find({provider: providerId})

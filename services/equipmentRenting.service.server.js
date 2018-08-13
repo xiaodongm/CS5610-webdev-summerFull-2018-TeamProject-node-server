@@ -21,19 +21,19 @@ module.exports = function (app) {
                     if (event.organizer != curUser._id && curUser.username !== 'admin') {
                         res.json({error: 'you don not have permission to do this'});
                     } else {
-                    equipmentModel.findEquipmentById(equipId)
-                        .then(equipment => {
-                            if (rent.quantity > equipment.available) {
-                                res.json({error: 'Sorry, there is not enough equipment'});
-                            } else {
-                                equipmentModel.takeawayEquipments(equipId, rent.quantity)
-                                    .then(() => {
-                                        equipmentRentingModel.rentEquipmentForEvent(rent)
-                                            .then(response => res.json(response));
-                                    })
-                            }
-                        })
-                     }
+                        equipmentModel.findEquipmentById(equipId)
+                            .then(equipment => {
+                                if (rent.quantity > equipment.available) {
+                                    res.json({error: 'Sorry, there is not enough equipment'});
+                                } else {
+                                    equipmentModel.takeawayEquipments(equipId, rent.quantity)
+                                        .then(() => {
+                                            equipmentRentingModel.rentEquipmentForEvent(rent)
+                                                .then(response => res.json(response));
+                                        })
+                                }
+                            })
+                    }
                 });
         } else {
             res.json({error: 'Please log in'});
@@ -63,15 +63,17 @@ module.exports = function (app) {
             console.log(rent);
             equipmentModel.findEquipmentById(equipId)
                 .then(equip => {
+                    console.log(rent);
+                    console.log(equip);
+                    console.log(rent.quantity);
                     if (equip.provider != curUser._id && curUser.username !== 'admin') {
                         res.json({error: 'you don not have permission to do this'});
                     } else {
                         equipmentModel.returnbackEquipments(equipId, rent.quantity)
-                            .then((res) => {
-                                equipmentRentingModel
-                                    .returnEquipForEvent(rent)
-                                    .then((response) => res.json(response));
-                            });
+                            .then(() => equipmentRentingModel
+                                .returnEquipForEvent(rent)
+                                .then(() => res.send('200')));
+
                     }
                 });
 
@@ -88,10 +90,10 @@ module.exports = function (app) {
 
     }
 
-    function findAllRentings() {
+    function findAllRentings(req, res) {
         equipmentRentingModel
             .findAllRentings()
             .then(rentings => res.json(rentings));
 
     }
-}
+};

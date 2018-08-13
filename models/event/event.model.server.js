@@ -43,6 +43,8 @@ function removeAttendee(enventId, attendeeId) {
     );
 }
 
+
+
 var api = {
     findAllEvents: findAllEvents,
     findEventById: findEventById,

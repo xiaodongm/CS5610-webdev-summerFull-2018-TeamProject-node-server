@@ -8,6 +8,7 @@ module.exports = function (app) {
 
     var equipmentModel = require('../models/equipment/equipment.model.server');
     // var enrollmentModel = require('../models/enrollment/enrollment.module.server');
+    var equipmentRentingModel = require('../models/equipmentRenting/equipmentRenting.model.server');
 
     function findAllEquipments(req, res) {
         equipmentModel.findAllEquipments()
@@ -21,10 +22,10 @@ module.exports = function (app) {
     }
 
     function deleteEquipment(req, res) {
-        // const curUser = req.session.currentUser;
+         const curUser = req.session.currentUser;
         // const eventId = req.params['eventId'];
         // let enrollments = [];
-        // if(curUser) {
+        if(curUser) {
         //     enrollmentModel.findEnrollmentsForEvent(eventId)
         //         .then(response => enrollments = response)
         // .then(() => eventModel.deleteEvent(eventId))
@@ -34,12 +35,16 @@ module.exports = function (app) {
         //     }
         // })
         // .then(() => res.send('200'));
-        // } else {
-        //     res.json({error: 'Please log in'});
-        // }
-        const equipmentId = req.params['equipmentId'];
-        // console.log(equipmentId);
-        equipmentModel.deleteEquipment(equipmentId).then(() => res.send('200'));
+            const equipmentId = req.params['equipmentId'];
+            equipmentRentingModel.findRentingsForEquipment(equipmentId)
+                .then(rentings => rentings.forEach(r => {
+                    equipmentRentingModel.returnEquipForEvent(r).then();
+                })).then(
+                () => equipmentModel.deleteEquipment(equipmentId).then(() => res.send('200')));
+        } else {
+            res.json({error: 'Please log in'});
+        }
+
     }
 
     function createEquipment(req, res) {
