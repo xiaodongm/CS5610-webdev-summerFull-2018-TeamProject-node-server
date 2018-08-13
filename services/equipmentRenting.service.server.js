@@ -12,30 +12,28 @@ module.exports = function (app) {
 
     function rentEquipmentForEvent(req, res) {
         const curUser = req.session.currentUser;
-        console.log('here');
         if (curUser) {
             const eventId = req.params['eventId'];
             const equipId = req.params['equipId'];
             const rent = req.body;
-            console.log(rent);
             eventModel.findEventById(eventId).then(
                 event => {
                     if (event.organizer != curUser._id && curUser.username !== 'admin') {
                         res.json({error: 'you don not have permission to do this'});
                     } else {
-                    equipmentModel.findEquipmentById(equipId)
-                        .then(equipment => {
-                            if (rent.quantity > equipment.available) {
-                                res.json({error: 'Sorry, there is not enough equipment'});
-                            } else {
-                                equipmentModel.takeawayEquipments(equipId, rent.quantity)
-                                    .then(() => {
-                                        equipmentRentingModel.rentEquipmentForEvent(rent)
-                                            .then(response => res.json(response));
-                                    })
-                            }
-                        })
-                     }
+                        equipmentModel.findEquipmentById(equipId)
+                            .then(equipment => {
+                                if (rent.quantity > equipment.available) {
+                                    res.json({error: 'Sorry, there is not enough equipment'});
+                                } else {
+                                    equipmentModel.takeawayEquipments(equipId, rent.quantity)
+                                        .then(() => {
+                                            equipmentRentingModel.rentEquipmentForEvent(rent)
+                                                .then(response => res.json(response));
+                                        })
+                                }
+                            })
+                    }
                 });
         } else {
             res.json({error: 'Please log in'});
@@ -62,6 +60,7 @@ module.exports = function (app) {
             const eventId = req.params['eventId'];
             const equipId = req.params['equipId'];
             const rent = req.body;
+            console.log(rent);
             equipmentModel.findEquipmentById(equipId)
                 .then(equip => {
                     console.log(rent);
@@ -74,6 +73,7 @@ module.exports = function (app) {
                             .then(() => equipmentRentingModel
                                 .returnEquipForEvent(rent)
                                 .then(() => res.send('200')));
+
                     }
                 });
 
