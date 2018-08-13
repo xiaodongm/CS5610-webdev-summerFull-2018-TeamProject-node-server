@@ -106,8 +106,7 @@ module.exports = function (app) {
         const userId = req.params['userId'];
         userModel.findUserById(userId)
             .then(response => {
-                const followingFriends = response.following;
-                res.json(followingFriends);
+                res.json(response.following);
             });
     }
 

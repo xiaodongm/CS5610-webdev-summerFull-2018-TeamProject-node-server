@@ -71,18 +71,9 @@ module.exports = function (app) {
                 event: eventId,
                 site: siteId
             };
-
-            eventModel.findEventById(eventId)
-                .then(event => {
-
-                    if (event.organizer != curUser._id && curUser.username !== 'admin') {
-                        res.json({error: 'you don not have permission to do this'});
-                    } else {
-                        reservationModel
-                            .unreserveSiteForEvent(reservation)
-                            .then(reservation =>  {console.log(reservation);res.json(reservation)});
-                    }
-            });
+            reservationModel
+                .unreserveSiteForEvent(reservation)
+                .then(reservation =>  {console.log(reservation);res.json(reservation)});
 
         } else {
             res.json({error: 'Please log in'});
@@ -91,7 +82,7 @@ module.exports = function (app) {
 
     function findAllReservations(req, res) {
         reservationModel
-            .findAllReservations
+            .findAllReservations()
             .then(reservation =>  res.json(reservation));
     }
 

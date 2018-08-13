@@ -12,12 +12,10 @@ module.exports = function (app) {
 
     function rentEquipmentForEvent(req, res) {
         const curUser = req.session.currentUser;
-        console.log('here');
         if (curUser) {
             const eventId = req.params['eventId'];
             const equipId = req.params['equipId'];
             const rent = req.body;
-            console.log(rent);
             eventModel.findEventById(eventId).then(
                 event => {
                     if (event.organizer != curUser._id && curUser.username !== 'admin') {
@@ -58,19 +56,22 @@ module.exports = function (app) {
 
     function returnEquipForEvent(req, res) {
         const curUser = req.session.currentUser;
-        if (!curUser) {
+        if (curUser) {
             const eventId = req.params['eventId'];
             const equipId = req.params['equipId'];
             const rent = req.body;
+            console.log(rent);
             equipmentModel.findEquipmentById(equipId)
                 .then(equip => {
                     if (equip.provider != curUser._id && curUser.username !== 'admin') {
                         res.json({error: 'you don not have permission to do this'});
                     } else {
                         equipmentModel.returnbackEquipments(equipId, rent.quantity)
-                            .then(() => equipmentRentingModel
-                                .returnEquipForEvent(rent)
-                                .then(() => res.json('200')));
+                            .then((res) => {
+                                equipmentRentingModel
+                                    .returnEquipForEvent(rent)
+                                    .then((response) => res.json(response));
+                            });
                     }
                 });
 
@@ -89,7 +90,7 @@ module.exports = function (app) {
 
     function findAllRentings() {
         equipmentRentingModel
-            .findRentingsForProvider(providerId)
+            .findAllRentings()
             .then(rentings => res.json(rentings));
 
     }
