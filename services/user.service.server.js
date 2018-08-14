@@ -9,6 +9,7 @@ module.exports = function (app) {
     app.put('/api/profile', updateUser);
     // app.delete('/api/profile', deleteUser);
     app.delete('/api/user/userId/:userId', deleteUser);
+    app.get('/api/user/userId/:userId/checkDelete', checkDelete);
     app.put('/api/admin/updateUser', adminUpdateUser);
     app.put('/api/user/follow/:userId', followUser);
     app.put('/api/user/un_follow/:userId', unfollowUser);
@@ -126,6 +127,7 @@ module.exports = function (app) {
     // }
 
     function updateUser(req, res) {
+        console.log('1');
         var newUser = req.body;
         // console.log(newUser);
         userModel.updateUser(newUser)
@@ -138,6 +140,7 @@ module.exports = function (app) {
     }
 
     function adminUpdateUser(req, res) {
+        console.log('2');
         const newUser = req.body;
         userModel.updateUser(newUser)
             .then(function (user) {
@@ -146,72 +149,114 @@ module.exports = function (app) {
             })
     }
 
+    // function deleteUser(req, res) {
+    //     var currentUser = req.session['currentUser'];
+    //     if (!currentUser) {
+    //         res.json({error: 'Please log in'});
+    //     } else {
+    //         let enrollments = [];
+    //         const id = req.params['userId'];
+    //         let organizedEvent = [];
+    //         let attendedEventPromiseArray = [];
+    //         eventModel.findEventsForUser(id)
+    //             .then(events => {
+    //                 organizedEvent = events;
+    //                 checkDelete(events).then(
+    //                     response => {
+    //                         if (response) {
+    //                             var enrollPromiseArray = [];
+    //                             for (const e of organizedEvent) {
+    //                                 enrollPromiseArray.push(enrollmentModel.findEnrollmentsForEvent(e._id));
+    //                             }
+    //
+    //                             var organizedPromiseArray = [];
+    //                             for (const event of organizedEvent) {
+    //                                 organizedPromiseArray.push(eventModel.deleteEvent(event._id));
+    //                             }
+    //
+    //                             Promise.all(enrollPromiseArray)
+    //                                 .then((enrolls) => {
+    //                                     console.log('find all organized events enrollments');
+    //                                     var deleteEnrollPromiseArray = [];
+    //                                     for (const enrs of enrolls) {
+    //                                         for (const enr of enrs) {
+    //                                             deleteEnrollPromiseArray.push(enrollmentModel.unenrollAttendeeInEvent(enr));
+    //                                         }
+    //                                     }
+    //                                     return Promise.all(deleteEnrollPromiseArray);
+    //
+    //                                 })
+    //                                 .then(() => {
+    //                                     console.log('delete all organized events enrollments');
+    //                                     return Promise.all(organizedPromiseArray);
+    //                                 })
+    //                                 .then(
+    //                                     () => {
+    //                                         console.log('deleted organized events');
+    //                                         return enrollmentModel.findEnrollmentsForAttendee(id);
+    //                                     }
+    //                                 ).then(
+    //                                 (enrollments) => {
+    //
+    //                                     var enrollmentPromiseArray = [];
+    //                                     // var removeAttendeePromiseArray = [];
+    //                                     for (const enrollment of enrollments) {
+    //                                         console.log(enrollment);
+    //                                         attendedEventPromiseArray.push(eventModel.findEventById(enrollment.event));
+    //                                         // removeAttendeePromiseArray.push(eventModel.removeAttendee(id, enrollment.event._id));
+    //                                         enrollmentPromiseArray.push(enrollmentModel.unenrollAttendeeInEvent(enrollment));
+    //                                     }
+    //                                     // Promise.all(removeAttendeePromiseArray).then();
+    //                                     return Promise.all(enrollmentPromiseArray);
+    //                                 }
+    //                             )
+    //                             .then(
+    //                                 () => {
+    //                                    return Promis.all(attendedEventPromiseArray);
+    //                                 }
+    //                             )
+    //                             .then(
+    //                                 (attendedEvents) => {
+    //                                     attendedEvents.forEach((event) => {
+    //                                         for (let i = 0; i < event.attendee.length; i++) {
+    //                                            if (event.attendee[i]._id == id) {
+    //                                                event.attendee.splice(i, 1);
+    //                                            }
+    //                                         }
+    //
+    //                                     });
+    //                                 }
+    //                             )
+    //                             .then(
+    //                                 () => {
+    //                                     userModel.deleteUserById(id)
+    //                                         .then((response) => res.json(response));
+    //                                 }
+    //                             )
+    //
+    //                         } else {
+    //                             res.json({error: 'Sorry, you can not delete account before you returned all equipments and cancels all reservations!'})
+    //                         }
+    //                     }
+    //                 );
+    //
+    //             })
+    //     }
+    // }
+
     function deleteUser(req, res) {
+        console .log('delete user');
         var currentUser = req.session['currentUser'];
-        if (!currentUser) {
-            res.json({error: 'Please log in'});
-        } else {
-            let enrollments = [];
-            const id = req.params['userId'];
-            let organizedEvent = [];
-            eventModel.findEventsForUser(id)
-                .then(events => {
-                    organizedEvent = events;
-                    checkDelete(events).then(
-                        response => {
-                            if (response) {
-                                var enrollPromiseArray = [];
-                                for (const e of organizedEvent) {
-                                    enrollPromiseArray.push(enrollmentModel.findEnrollmentsForEvent(e._id));
-                                }
+        console.log(currentUser);
+        const id = req.params['userId'];
 
-                                var organizedPromiseArray = [];
-                                for (const event of organizedEvent) {
-                                    organizedPromiseArray.push(eventModel.deleteEvent(event._id));
-                                }
+        userModel.deleteUserById(id)
+            .then((response) => res.json(response));
 
-                                Promise.all(enrollPromiseArray)
-                                    .then(() => {
-                                        console.log('delete organized events enrollments');
-                                        return Promise.all(organizedPromiseArray)
-
-                                    })
-                                    .then(
-                                        () => {
-                                            console.log('deleted organized events');
-                                            return enrollmentModel.findEnrollmentsForAttendee(id);
-                                        }
-                                    ).then(
-                                    (enrollments) => {
-                                        var enrollmentPromiseArray = [];
-                                        // var removeAttendeePromiseArray = [];
-                                        for (const enrollment of enrollments) {
-                                            console.log(enrollment);
-                                            // removeAttendeePromiseArray.push(eventModel.removeAttendee(id, enrollment.event._id));
-                                            enrollmentPromiseArray.push(enrollmentModel.unenrollAttendeeInEvent(enrollment));
-                                        }
-                                        // Promise.all(removeAttendeePromiseArray).then();
-                                        return Promise.all(enrollmentPromiseArray);
-                                    }
-                                ).then(
-                                    () => {
-                                        userModel.deleteUserById(id)
-                                            .then((response) => res.json(response));
-                                    }
-                                )
-
-                            } else {
-                                res.json({error: 'Sorry, you can not delete account before you returned all equipments and cancels all reservations!'})
-                            }
-                        }
-                    );
-
-                })
-        }
     }
 
 
-    function checkDelete(events) {
+    function checkDelete(req, res) {
         // var isTrue = true;
         // for (let i = 0; i < events.length; i++ ) {
         //     let rentings = [];
@@ -230,21 +275,38 @@ module.exports = function (app) {
         //         })
         // }
 
-        const promise_array = [];
-        // const promise_array2 = [];
+        const id = req.params['userId'];
         var ok = true;
-        for (const event of events) {
-            promise_array.push(equipmentRentingModel.findRentingsForEvent(event._id));
-            promise_array.push(reservationModel.findReservationsForEvent(event._id));
-        }
-        return Promise.all(promise_array)
+        console.log('check delete' + id);
+        return eventModel.findEventsForUser(id)
+            .then(events => {
+            const promise_array = [];
+            // const promise_array2 = [];
+
+            for (const event of events) {
+                promise_array.push(equipmentRentingModel.findRentingsForEvent(event._id));
+                promise_array.push(reservationModel.findReservationsForEvent(event._id));
+            }
+            return Promise.all(promise_array);
+        })
             .then(response => {
-                response.forEach(res => {
+                    console.log(response);
+                    response.forEach(res => {
                     if (res.length > 0) {
-                        ok = false;
-                    }
-                })
-            }).then(() => ok);
+                    ok = false;
+                }
+            })
+            }).then(() => res.json({ok: ok}));
+
+
+        // return Promise.all(promise_array)
+        //     .then(response => {
+        //         response.forEach(res => {
+        //             if (res.length > 0) {
+        //                 ok = false;
+        //             }
+        //         })
+        //     }).then(() => ok);
     }
 
     function deleteUserById(req, res) {

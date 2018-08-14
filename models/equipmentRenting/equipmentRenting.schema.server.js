@@ -10,7 +10,7 @@ var equipmentRentingSchema = mongoose.Schema({
     },
     provider: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'EquipmentModel',
+        ref: 'ProviderModel',
     },
     quantity: Number
 }, {collection: 'equipmentRenting'});
