@@ -20,7 +20,7 @@ module.exports = function (app) {
         var credentials = req.body;
         providerModel
             .findProviderByCredentials(credentials)
-            .then(function(user) {
+            .then(function (user) {
                 if (user === null) {
                     res.json({error: 'can not find'})
                 } else {
@@ -57,7 +57,7 @@ module.exports = function (app) {
         var user = req.body;
         providerModel.findProviderByUsername(user.username)
             .then(response => {
-                if(response) {
+                if (response) {
                     res.json({err: 'Username already exist!'})
                 } else {
                     providerModel.createProvider(user)
@@ -108,72 +108,73 @@ module.exports = function (app) {
     }
 
     function deleteProvider(req, res) {
-        var currentUser = req.session['currentUser'];
-        console.log(currentUser);
-        console.log(!currentUser);
-        if (!currentUser) {
-            res.json({error: 'Please log in'});
-        } else {
-            const id = req.params['providerId'];
-            providerModel.findProviderById(id)
-                .then(user => {
-                    if(user){
-                        if (user.role === 'SiteManager') {
-                            let s;
-                            siteModel.findSitesForProvider(user._id)
-                                .then(sites => {
-                                    s = sites;
-                                    var sitesPromiseArray = [];
-                                    for (const site of sites) {
-                                        sitesPromiseArray.push(reservationModel.findReservationsForSite(site._id));
-                                    }
-                                    Promise.all(sitesPromiseArray)
-                                        .then(reservations => {
-                                            var reservationPromiseArray = [];
-                                            for (const reservation of reservations) {
-                                                reservationPromiseArray.push(reservationModel.unreserveSiteForEvent(reservation));
-                                            }
-                                            return Promise.all(reservationPromiseArray);
-                                        }). then(() => {
-                                            var sPromiseArray = [];
-                                            for (const si of s) {
-                                                sPromiseArray.push(siteModel.deleteSite(si._id));
-                                            }
-                                            return Promise.all(sPromiseArray);
-                                    }).then(() => providerModel.deleteProviderById(id).then((response) => res.json(response)));
-                                })
-                        } else {
-                            let e;
-                            equipmentModel.findEquipmentsForProvider(user._id)
-                                .then(equipments => {
-                                    e = equipments;
-                                    var equipmentsPromiseArray = [];
-                                    for (const equipment of equipments) {
-                                        equipmentsPromiseArray.push(equipmentRentingModel.findRentingsForEquipment(equipment._id));
-                                    }
-                                    Promise.all(equipmentsPromiseArray)
-                                        .then(rentings => {
-                                            var rentingPromiseArray = [];
-                                            for (const renting of rentings) {
-                                                console.log(rentings);
-                                                rentingPromiseArray.push(equipmentRentingModel.returnEquipForEvent(renting));
-                                            }
-                                            return Promise.all(rentingPromiseArray);
-                                        }). then(() => {
-                                        var ePromiseArray = [];
-                                        for (const eq of e) {
-                                            ePromiseArray.push(equipmentModel.deleteEquipment(eq._id));
-                                        }
-                                        return Promise.all(ePromiseArray);
-                                    }).then(() => providerModel.deleteProviderById(id).then((response) => res.json(response)));
-                                })
-                        }
-                    } else {
-                        res.json({error: 'There is no such user'});
-                    }
-                })
-        }
-
+        // var currentUser = req.session['currentUser'];
+        // console.log(currentUser);
+        // console.log(!currentUser);
+        // if (currentUser) {
+        //     res.json({error: 'Please log in'});
+        // } else {
+        const id = req.params['providerId'];
+        // providerModel.findProviderById(id)
+        //     .then(user => {
+        //         if (user) {
+        //             if (user.role === 'SiteManager') {
+        //                 let s;
+        //                 siteModel.findSitesForProvider(user._id)
+        //                     .then(sites => {
+        //                         s = sites;
+        //                         var sitesPromiseArray = [];
+        //                         for (const site of sites) {
+        //                             sitesPromiseArray.push.apply(sitesPromiseArray, reservationModel.findReservationsForSite(site._id));
+        //                         }
+        //                         Promise.all(sitesPromiseArray)
+        //                             .then(reservations => {
+        //                                 var reservationPromiseArray = [];
+        //                                 for (const reservation of reservations) {
+        //                                     reservationPromiseArray.push(reservationModel.unreserveSiteForEvent(reservation));
+        //                                 }
+        //                                 return Promise.all(reservationPromiseArray);
+        //                             }).then(() => {
+        //                             var sPromiseArray = [];
+        //                             for (const si of s) {
+        //                                 sPromiseArray.push(siteModel.deleteSite(si._id));
+        //                             }
+        //                             return Promise.all(sPromiseArray);
+        //                         }).then(() => providerModel.deleteProviderById(id).then((response) => res.json(response)));
+        //                     })
+        //             } else {
+        //                 let e;
+        //                 equipmentModel.findEquipmentsForProvider(user._id)
+        //                     .then(equipments => {
+        //                         e = equipments;
+        //                         var equipmentsPromiseArray = [];
+        //                         for (const equipment of equipments) {
+        //                             equipmentsPromiseArray.push(equipmentRentingModel.findRentingsForEquipment(equipment._id));
+        //                         }
+        //                         Promise.all(equipmentsPromiseArray)
+        //                             .then(rentings => {
+        //                                 var rentingPromiseArray = [];
+        //                                 for (const renting of rentings) {
+        //                                     console.log(rentings);
+        //                                     rentingPromiseArray.push.apply(rentingPromiseArray, equipmentRentingModel.returnEquipForEvent(renting));
+        //                                 }
+        //                                 return Promise.all(rentingPromiseArray);
+        //                             }).then(() => {
+        //                             var ePromiseArray = [];
+        //                             for (const eq of e) {
+        //                                 ePromiseArray.push(equipmentModel.deleteEquipment(eq._id));
+        //                             }
+        //                             return Promise.all(ePromiseArray);
+        //                         }).then(() => providerModel.deleteProviderById(id).then((response) => res.json(response)));
+        //                     })
+        //             }
+        //         } else {
+        //             res.json({error: 'There is no such user'});
+        //         }
+        //     })
+        // }
+        providerModel.deleteProviderById(id)
+            .then(() => res.send('200'));
     }
 
     function deleteProviderById(req, res) {
